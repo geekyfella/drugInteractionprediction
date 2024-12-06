@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drug Interaction Predictor</title>
+</head>
+<body>
+    <h1>Drug Interaction Predictor</h1>
+    <form id="predictForm">
+        <label>Drug 1 CYP3A4:</label>
+        <input type="number" id="drug1_cyp3a4" required><br><br>
+
+        <label>Drug 1 Binding Affinity:</label>
+        <input type="number" step="any" id="drug1_binding_affinity" required><br><br>
+
+        <label>Drug 1 Renal Clearance:</label>
+        <input type="number" step="any" id="drug1_renal_clearance" required><br><br>
+
+        <label>Drug 1 LogP:</label>
+        <input type="number" step="any" id="drug1_logP" required><br><br>
+
+        <label>Drug 2 CYP3A4:</label>
+        <input type="number" id="drug2_cyp3a4" required><br><br>
+
+        <label>Drug 2 Binding Affinity:</label>
+        <input type="number" step="any" id="drug2_binding_affinity" required><br><br>
+
+        <label>Drug 2 Renal Clearance:</label>
+        <input type="number" step="any" id="drug2_renal_clearance" required><br><br>
+
+        <label>Drug 2 LogP:</label>
+        <input type="number" step="any" id="drug2_logP" required><br><br>
+
+        <button type="button" onclick="predict()">Predict Interaction</button>
+    </form>
+
+    <h2>Results</h2>
+    <div id="results"></div>
+
+    <script>
+        function predict() {
+            const data = {
+                drug1_cyp3a4: parseInt(document.getElementById("drug1_cyp3a4").value),
+                drug1_binding_affinity: parseFloat(document.getElementById("drug1_binding_affinity").value),
+                drug1_renal_clearance: parseFloat(document.getElementById("drug1_renal_clearance").value),
+                drug1_logP: parseFloat(document.getElementById("drug1_logP").value),
+                drug2_cyp3a4: parseInt(document.getElementById("drug2_cyp3a4").value),
+                drug2_binding_affinity: parseFloat(document.getElementById("drug2_binding_affinity").value),
+                drug2_renal_clearance: parseFloat(document.getElementById("drug2_renal_clearance").value),
+                drug2_logP: parseFloat(document.getElementById("drug2_logP").value)
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById("results").innerHTML = `
+                    <p>Predicted Interaction: ${result.interaction} (0: No Interaction, 1: Interaction)</p>
+                    <p>Probability of Interaction: ${result.probability.toFixed(4)}</p>
+                `;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
